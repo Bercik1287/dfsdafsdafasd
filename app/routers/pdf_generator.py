@@ -151,7 +151,7 @@ class ScheduleGenerator:
                         pdf.set_font('Arial', '', 9)
                         pdf.cell(40, 5, 'Przystanki:', 0, 0, 'L')
                         
-                        stops_text = " → ".join([
+                        stops_text = " > ".join([
                             f"{stop['nazwa']}" + (f" ({stop['ulica']})" if stop['ulica'] else "")
                             for stop in variant['przystanki']
                         ])

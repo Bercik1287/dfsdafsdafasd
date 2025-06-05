@@ -6,6 +6,7 @@ from app.util.protectRoute import get_current_user
 from app.db.schema.user import UserOutput
 from fastapi.middleware.cors import CORSMiddleware
 from app.routers.autobusy import router
+from app.routers.pdf_generator import router as pdf_router
 
 @asynccontextmanager
 async def lifespan(app : FastAPI):
@@ -40,6 +41,7 @@ def read_protected(user: UserOutput = Depends(get_current_user)):
     return{"status": "Running..."}
 
 app.include_router(router)
+app.include_router(pdf_router)
 
 @app.get("/")
 def root():

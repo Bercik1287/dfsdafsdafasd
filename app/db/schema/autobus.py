@@ -184,3 +184,54 @@ class WariantInUpdate(BaseModel):
 
 # class UserWithToken(BaseModel):
 #     token: str
+
+class LinieTrasy(BaseModel):
+    """Schema for assigning routes to lines"""
+    line_id: int
+    route_id: int
+    line_number: Optional[str] = None
+
+class LinieTrasy_Response(BaseModel):
+    """Response schema for line-route assignment"""
+    id: int
+    line_id: int
+    route_id: int
+    line_number: str
+    
+    class Config:
+        orm_mode = True
+
+class RouteForLine(BaseModel):
+    """Schema for routes assigned to a line"""
+    route_id: int
+    route_name: str
+    line_number: Optional[str]
+    assignment_id: int
+
+class LineForRoute(BaseModel):
+    """Schema for lines using a route"""
+    line_id: int
+    line_number: str
+    line_direction: str
+    line_description: Optional[str]
+    assignment_id: int
+
+class LineWithRoutes(BaseModel):
+    """Schema for line with all its routes"""
+    id: int
+    numer: str
+    kierunek: str
+    opis: Optional[str]
+    routes: List[RouteForLine]
+    
+    class Config:
+        orm_mode = True
+
+class RouteWithLines(BaseModel):
+    """Schema for route with all lines using it"""
+    id: int
+    nazwa: str
+    lines: List[LineForRoute]
+    
+    class Config:
+        orm_mode = True
