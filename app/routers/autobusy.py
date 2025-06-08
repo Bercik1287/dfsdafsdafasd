@@ -238,12 +238,99 @@ def pobierz_warianty(db: Session = Depends(get_db)):
         )
     
 # nnie działa
-@router.get("/warianty/{wariant_id}", response_model=WariantOutput)
+@router.get("/warianty/{wariant_id}")
 def pobierz_wariant(wariant_id: int, db: Session = Depends(get_db)):
     wariant = get_wariant_by_id(db, wariant_id)
     if not wariant:
         raise HTTPException(status_code=404, detail="Wariant nie został znaleziony")
-    return wariant
+    
+    # Return the wariant with proper field mapping
+    return {
+        "id": wariant.id,
+        "nazwa": wariant.nazwa,
+        "kod": wariant.kod_wariantu,  # Map kod_wariantu to kod for response
+        "godziny_odjazdu": json.loads(wariant.godziny_odjazdu) if wariant.godziny_odjazdu else []
+    }
+
+
+# update
+@router.put("/autobusy", response_model=AutobusOutput)
+def aktualizuj_autobus(autobus_update: AutobusInUpdate, db: Session = Depends(get_db)):
+    """Update autobus data"""
+    return update_autobus(db, autobus_update)
+
+@router.put("/kierowcy", response_model=KierowcaOutput)
+def aktualizuj_kierowce(kierowca_update: KierowcaInUpdate, db: Session = Depends(get_db)):
+    """Update kierowca data"""
+    return update_kierowca(db, kierowca_update)
+
+@router.put("/brygady", response_model=BrygadaOutput)
+def aktualizuj_brygade(brygada_update: BrygadaInUpdate, db: Session = Depends(get_db)):
+    """Update brygada data"""
+    return update_brygada(db, brygada_update)
+
+@router.put("/przystanki", response_model=PrzystanekOutput)
+def aktualizuj_przystanek(przystanek_update: PrzystanekInUpdate, db: Session = Depends(get_db)):
+    """Update przystanek data"""
+    return update_przystanek(db, przystanek_update)
+
+@router.put("/linie", response_model=LiniaOutput)
+def aktualizuj_linie(linia_update: LiniaInUpdate, db: Session = Depends(get_db)):
+    """Update linia data"""
+    return update_linia(db, linia_update)
+
+@router.put("/trasy", response_model=TrasaOutput)
+def aktualizuj_trase(trasa_update: TrasaInUpdate, db: Session = Depends(get_db)):
+    """Update trasa data"""
+    return update_trasa(db, trasa_update)
+
+@router.put("/warianty")
+def aktualizuj_wariant(wariant_update: WariantInUpdate, db: Session = Depends(get_db)):
+    """Update wariant data"""
+    updated_wariant = update_wariant(db, wariant_update)
+    # Return with proper field mapping
+    return {
+        "id": updated_wariant.id,
+        "nazwa": updated_wariant.nazwa,
+        "kod": updated_wariant.kod_wariantu,
+        "godziny_odjazdu": json.loads(updated_wariant.godziny_odjazdu) if updated_wariant.godziny_odjazdu else []
+    }
+
+#delete
+@router.delete("/autobusy/{autobus_id}")
+def usun_autobus(autobus_id: int, db: Session = Depends(get_db)):
+    """Delete autobus"""
+    return delete_autobus(db, autobus_id)
+
+@router.delete("/kierowcy/{kierowca_id}")
+def usun_kierowce(kierowca_id: int, db: Session = Depends(get_db)):
+    """Delete kierowca"""
+    return delete_kierowca(db, kierowca_id)
+
+@router.delete("/brygady/{brygada_id}")
+def usun_brygade(brygada_id: int, db: Session = Depends(get_db)):
+    """Delete brygada"""
+    return delete_brygada(db, brygada_id)
+
+@router.delete("/przystanki/{przystanek_id}")
+def usun_przystanek(przystanek_id: int, db: Session = Depends(get_db)):
+    """Delete przystanek"""
+    return delete_przystanek(db, przystanek_id)
+
+@router.delete("/linie/{linia_id}")
+def usun_linie(linia_id: int, db: Session = Depends(get_db)):
+    """Delete linia"""
+    return delete_linia(db, linia_id)
+
+@router.delete("/trasy/{trasa_id}")
+def usun_trase(trasa_id: int, db: Session = Depends(get_db)):
+    """Delete trasa"""
+    return delete_trasa(db, trasa_id)
+
+@router.delete("/warianty/{wariant_id}")
+def usun_wariant(wariant_id: int, db: Session = Depends(get_db)):
+    """Delete wariant"""
+    return delete_wariant(db, wariant_id)
 
 # @router.post(
 #     "/rozklad",
