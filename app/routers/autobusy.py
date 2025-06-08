@@ -2,8 +2,20 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from app.db.models.system import Linie_Trasy, Trasy, Kierowcy, Linie, Przystanki, Brygady, Autobusy, Warianty, Przystanki_Warianty, Odjazdy, Warianty_Trasy
-from app.db.schema.autobus import TrasaCreate, TrasaResponse, AutobusInCreate, AutobusOutput, LiniaInCreate, LiniaOutput, WariantInCreate, WariantOutput,  TrasaInCreate, TrasaOutput, AutobusInCreate, AutobusOutput, KierowcaInCreate, KierowcaOutput, PrzystanekOutput, PrzystanekInCreate, BrygadaInCreate, BrygadaOutput
-from app.db.crud.autobus import create_linie, create_wariant, create_trasa, create_autobus, create_kierowca, create_brygada, create_przystanek
+from app.db.schema.autobus import (
+    TrasaCreate, TrasaResponse, AutobusInCreate, AutobusOutput, LiniaInCreate, LiniaOutput, 
+    WariantInCreate, WariantOutput, TrasaInCreate, TrasaOutput, KierowcaInCreate, KierowcaOutput, 
+    PrzystanekOutput, PrzystanekInCreate, BrygadaInCreate, BrygadaOutput,
+    AutobusInUpdate, KierowcaInUpdate, BrygadaInUpdate, PrzystanekInUpdate,
+    WariantInUpdate, TrasaInUpdate, LiniaInUpdate
+)
+from app.db.crud.autobus import (
+    create_linie, create_wariant, create_trasa, create_autobus, create_kierowca, create_brygada, create_przystanek,
+    get_autobusy, get_autobus_by_id, get_kierowcy, get_kierowca_by_id, get_brygady, get_brygada_by_id,
+    get_trasy, get_trasa_by_id, get_warianty, get_wariant_by_id, get_linia_by_id, get_przystanek_by_id,
+    update_autobus, update_kierowca, update_brygada, update_przystanek, update_linia, update_trasa, update_wariant,
+    delete_autobus, delete_kierowca, delete_brygada, delete_przystanek, delete_linia, delete_trasa, delete_wariant
+)
 from app.core.database import get_db
 import time
 import json
@@ -137,12 +149,49 @@ def dodaj_linie(linia: LiniaInCreate, db: Session = Depends(get_db)):
         )
 
     #get
+@router.get("/autobusy", response_model=List[AutobusOutput])
+def pobierz_autobusy(db: Session = Depends(get_db)):
+    return get_autobusy(db)
+
+@router.get("/autobusy/{autobus_id}", response_model=AutobusOutput)
+def pobierz_autobus(autobus_id: int, db: Session = Depends(get_db)):
+    autobus = get_autobus_by_id(db, autobus_id)
+    if not autobus:
+        raise HTTPException(status_code=404, detail="Autobus nie został znaleziony")
+    return autobus
+
+@router.get("/kierowcy", response_model=List[KierowcaOutput])
+def pobierz_kierowcow(db: Session = Depends(get_db)):
+    return get_kierowcy(db)
+
+@router.get("/kierowcy/{kierowca_id}", response_model=KierowcaOutput)
+def pobierz_kierowce(kierowca_id: int, db: Session = Depends(get_db)):
+    kierowca = get_kierowca_by_id(db, kierowca_id)
+    if not kierowca:
+        raise HTTPException(status_code=404, detail="Kierowca nie został znaleziony")
+    return kierowca
+
+@router.get("/brygady", response_model=List[BrygadaOutput])
+def pobierz_brygady(db: Session = Depends(get_db)):
+    return get_brygady(db)
+
+@router.get("/brygady/{brygada_id}", response_model=BrygadaOutput)
+def pobierz_brygade(brygada_id: int, db: Session = Depends(get_db)):
+    brygada = get_brygada_by_id(db, brygada_id)
+    if not brygada:
+        raise HTTPException(status_code=404, detail="Brygada nie została znaleziona")
+    return brygada
+
 @router.get("/linie")
 def pobierz_linie(db: Session = Depends(get_db)):
+    return db.query(Linie).all()
 
-        return db.query(Linie).all()
-
-
+@router.get("/linie/{linia_id}", response_model=LiniaOutput)
+def pobierz_linie_by_id(linia_id: int, db: Session = Depends(get_db)):
+    linia = get_linia_by_id(db, linia_id)
+    if not linia:
+        raise HTTPException(status_code=404, detail="Linia nie została znaleziona")
+    return linia
 
 @router.get("/przystanki")
 def pobierz_przystanki(db: Session = Depends(get_db)):
@@ -154,15 +203,47 @@ def pobierz_przystanki(db: Session = Depends(get_db)):
             detail=f"Błąd serwera: {str(e)}"
         )
 
-@router.get(
-    "/brygady",
-    response_model=list[BrygadaOutput],
-    #tags=["Brygady"],
-    summary="Pobierz listę brygad"
-)
-def pobierz_brygady(db: Session = Depends(get_db)):
+@router.get("/przystanki/{przystanek_id}", response_model=PrzystanekOutput)
+def pobierz_przystanek(przystanek_id: int, db: Session = Depends(get_db)):
+    przystanek = get_przystanek_by_id(db, przystanek_id)
+    if not przystanek:
+        raise HTTPException(status_code=404, detail="Przystanek nie został znaleziony")
+    return przystanek
 
-        return db.query(Brygady).order_by(Brygady.nazwa).all()
+@router.get("/trasy")
+def pobierz_trasy(db: Session = Depends(get_db)):
+    try:
+        return db.query(Trasy).all()
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Błąd serwera: {str(e)}"
+        )
+    
+@router.get("/trasy/{trasa_id}", response_model=TrasaOutput)
+def pobierz_trase(trasa_id: int, db: Session = Depends(get_db)):
+    trasa = get_trasa_by_id(db, trasa_id)
+    if not trasa:
+        raise HTTPException(status_code=404, detail="Trasa nie została znaleziona")
+    return trasa
+
+@router.get("/warianty")
+def pobierz_warianty(db: Session = Depends(get_db)):
+    try:
+        return db.query(Warianty).all()
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Błąd serwera: {str(e)}"
+        )
+    
+# nnie działa
+@router.get("/warianty/{wariant_id}", response_model=WariantOutput)
+def pobierz_wariant(wariant_id: int, db: Session = Depends(get_db)):
+    wariant = get_wariant_by_id(db, wariant_id)
+    if not wariant:
+        raise HTTPException(status_code=404, detail="Wariant nie został znaleziony")
+    return wariant
 
 # @router.post(
 #     "/rozklad",
