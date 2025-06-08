@@ -144,8 +144,7 @@ form {
   height: auto;                         
   width: 90%;                          
   display: flex;                        
-  flex-direction: column;   
-  margin-top: 10%;         
+  flex-direction: column;          
 }
 
 input{

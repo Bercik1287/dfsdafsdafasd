@@ -110,8 +110,8 @@ const submitForm = async () => {
   <style scoped>
   .container{
     background-color: var(--moj_srodek); /* Kolor tła kontenera */
-    border-radius: 15px; /* Zaokrąglone rogi */
-    ;
+    border-radius: 15px;
+    
   }
 form {
                  /* Pozwala na pozycjonowanie poza kontenerem */                      /* Wyrównanie komponentu w poziomie */

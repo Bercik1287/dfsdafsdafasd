@@ -199,7 +199,6 @@ const submitForm = async () => {
     ;
   }
 form {
-  margin-top: 25%;                     /* Wyrównanie komponentu w poziomie */
   transform: translateX(-50%);          /* Dokładne wyśrodkowanie */
   background-color: var(--moj_szary);   /* Kolor tła formularza */
   padding: 20px;                        /* Wewnętrzne marginesy */
